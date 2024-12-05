@@ -15,17 +15,17 @@ A simple and extendable package to manage templates and plugins in Laravel proje
 In your Laravel project, run the following command to install the package:
 
 ```bash
-composer require your-vendor/template-plugin-manager
+composer require viranet/viranet-tp-engine
 ```
 
 ### Step 2: Publish the configuration file (Optional)
 If you want to customize the configuration, publish the config file:
 
 ```bash
-php artisan vendor:publish --provider="YourNamespace\TemplatePluginManager\TemplatePluginManagerServiceProvider" --tag="config"
+php artisan vendor:publish --provider="ViraNet\TemplatePluginManager\TemplatePluginManagerServiceProvider" --tag="config"
 ```
 
-This will publish a configuration file named `template-plugin-manager.php` to your `config` directory.
+This will publish a configuration file named `viranet-tp-engine.php` to your `config` directory.
 
 ### Step 3: Add RouteServiceProvider (Optional)
 If your package needs to manage routes dynamically, make sure to load the package's routes inside `RouteServiceProvider`:
@@ -36,8 +36,8 @@ public function boot()
     parent::boot();
 
     // Load routes for templates and plugins
-    \YourNamespace\TemplatePluginManager\Services\RouteManager::loadPluginRoutes('your-plugin-name');
-    \YourNamespace\TemplatePluginManager\Services\RouteManager::loadTemplateRoutes('your-template-name');
+    \ViraNet\TemplatePluginManager\Services\RouteManager::loadPluginRoutes('your-plugin-name');
+    \ViraNet\TemplatePluginManager\Services\RouteManager::loadTemplateRoutes('your-template-name');
 }
 ```
 
@@ -58,7 +58,7 @@ SEARCH_API_URL=https://your-search-api-url
 To install a template, use the following method:
 
 ```php
-$templateManager = new \YourNamespace\TemplatePluginManager\TemplateManager();
+$templateManager = new \ViraNet\TemplatePluginManager\TemplateManager();
 $templateManager->installTemplate('template-name', '/path/to/template');
 ```
 
@@ -87,7 +87,7 @@ $templateManager->updateTemplate('template-name');
 To install a plugin:
 
 ```php
-$pluginManager = new \YourNamespace\TemplatePluginManager\PluginManager();
+$pluginManager = new \ViraNet\TemplatePluginManager\PluginManager();
 $pluginManager->installPlugin('plugin-name', '/path/to/plugin', 'your-license-key');
 ```
 
@@ -127,8 +127,8 @@ php artisan make:controller TemplatePluginController
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use YourNamespace\TemplatePluginManager\TemplateManager;
-use YourNamespace\TemplatePluginManager\PluginManager;
+use ViraNet\TemplatePluginManager\TemplateManager;
+use ViraNet\TemplatePluginManager\PluginManager;
 
 class TemplatePluginController extends Controller
 {

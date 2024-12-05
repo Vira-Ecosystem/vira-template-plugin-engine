@@ -15,7 +15,7 @@ class LicenseService
 {
     public static function validateLicense($licenseKey)
     {
-        $response = Http::post(config('template-plugin-manager.license_api_url'), [
+        $response = Http::post(config('viranet-tp-engine.license_api_url'), [
             'license_key' => $licenseKey,
         ]);
 

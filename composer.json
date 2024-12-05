@@ -1,5 +1,5 @@
 {
-    "name": "your-vendor/vira-template-plugin-engine",
+    "name": "viranet/vira-template-plugin-engine",
     "description": "A package to manage templates and plugins in Laravel",
     "autoload": {
         "psr-4": {

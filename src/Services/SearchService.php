@@ -16,7 +16,7 @@ class SearchService
 {
     public static function searchTemplates($query)
     {
-        $response = Http::get(config('template-plugin-manager.search_api_url').'/templates', [
+        $response = Http::get(config('viranet-tp-engine.search_api_url').'/templates', [
             'query' => $query,
         ]);
 
@@ -25,7 +25,7 @@ class SearchService
 
     public static function searchPlugins($query)
     {
-        $response = Http::get(config('template-plugin-manager.search_api_url').'/plugins', [
+        $response = Http::get(config('viranet-tp-engine.search_api_url').'/plugins', [
             'query' => $query,
         ]);
 
