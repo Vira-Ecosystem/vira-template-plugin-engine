@@ -4,69 +4,110 @@
  * @Date: 2024-12-05 11:12:25 
  * Copyright by Arvin Loripour 
  * WebSite : http://www.arvinlp.ir 
- * @Last Modified by:   Arvin.Loripour 
- * @Last Modified time: 2024-12-05 11:12:25 
+ * @Last Modified by: Arvin.Loripour
+ * @Last Modified time: 2024-12-05 12:03:33
  */
 namespace ViraNet\TemplatePluginManager;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use ViraNet\TemplatePluginManager\Services\RouteManager;
-use ViraNet\TemplatePluginManager\Services\UpdateService;
 
 class TemplateManager
 {
-    protected $basePath;
-
-    public function __construct()
-    {
-        $this->basePath = public_path('packages/templates'); // مسیر جدید برای قالب‌ها
-    }
-
     public function installTemplate($templateName, $path)
     {
-        $templatePath = $this->basePath . '/' . $templateName;
+        $templatePath = storage_path('app/templates/'.$templateName);
         File::copyDirectory($path, $templatePath);
 
-        // بارگذاری صفحات و روت‌های قالب
+        // بارگذاری صفحات اختصاصی و روت‌ها
         $this->loadTemplatePages($templateName);
         RouteManager::loadTemplateRoutes($templateName);
 
         return "Template installed successfully!";
     }
 
+    public function activateTemplate($templateName)
+    {
+        self::loadTemplatePages($templateName);
+        // فعال‌سازی قالب
+        return "Template {$templateName} activated.";
+    }
+
+    public function deactivateTemplate($templateName)
+    {
+        // غیر فعال‌سازی قالب
+        return "Template {$templateName} deactivated.";
+    }
+
+    public function deleteTemplate($templateName)
+    {
+        $templatePath = storage_path('app/templates/'.$templateName);
+
+        if (File::exists($templatePath)) {
+            File::deleteDirectory($templatePath);
+            return "Template deleted successfully!";
+        }
+
+        return "Template not found.";
+    }
+
+    // متد جدید برای دریافت اطلاعات قالب
     public function getTemplateMetadata($templateName)
     {
-        $metadataPath = $this->basePath . "/{$templateName}/metadata.json";
+        $metadataPath = storage_path('app/templates/'.$templateName.'/metadata.json');
+
         if (File::exists($metadataPath)) {
             return json_decode(File::get($metadataPath), true);
         }
 
-        return "Metadata not found.";
+        return null;
     }
 
+    // متد جدید برای بررسی بروزرسانی قالب
     public function checkForTemplateUpdates($templateName)
     {
         $metadata = $this->getTemplateMetadata($templateName);
-        if (is_array($metadata) && isset($metadata['update_url'])) {
-            return UpdateService::checkForUpdates($metadata['update_url'], $metadata['version']);
+
+        if ($metadata) {
+            $currentVersion = $metadata['version'];
+            $latestVersion = $metadata['latest_version'];
+
+            if (version_compare($currentVersion, $latestVersion, '<')) {
+                return [
+                    'update_available' => true,
+                    'latest_version' => $latestVersion,
+                    'download_url' => $metadata['download_url']
+                ];
+            }
+
+            return ['update_available' => false];
         }
 
-        return "No update URL found for template {$templateName}.";
+        return null;
     }
 
-    public function updateTemplate($templateName)
+    // متد جدید برای دانلود قالب
+    public function downloadTemplate($templateName)
     {
         $metadata = $this->getTemplateMetadata($templateName);
-        if (is_array($metadata) && isset($metadata['update_url'])) {
-            return UpdateService::downloadUpdate($metadata['update_url'], 'templates', $templateName);
+
+        if ($metadata) {
+            $downloadUrl = $metadata['download_url'];
+
+            // دانلود از URL
+            $filePath = storage_path('app/templates/'.$templateName.'.zip');
+            file_put_contents($filePath, file_get_contents($downloadUrl));
+
+            return "Template downloaded successfully!";
         }
 
-        return "Update not available for template {$templateName}.";
+        return "Template not found.";
     }
 
     public function loadTemplatePages($templateName)
     {
-        $templatePath = $this->basePath . "/{$templateName}/views";
+        $templatePath = storage_path('app/templates/'.$templateName.'/views');
 
         if (File::exists($templatePath)) {
             View::addNamespace('template', $templatePath);

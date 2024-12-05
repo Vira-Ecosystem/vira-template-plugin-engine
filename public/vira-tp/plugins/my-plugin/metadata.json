@@ -1,0 +1,8 @@
+{
+    "name": "My Plugin",
+    "version": "1.0.0",
+    "description": "This is a powerful plugin for Laravel.",
+    "preview_image": "https://example.com/plugin-preview.jpg",
+    "download_url": "https://example.com/download/my-plugin.zip",
+    "latest_version": "1.1.0"
+}

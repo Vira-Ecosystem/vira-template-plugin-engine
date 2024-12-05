@@ -1,0 +1,8 @@
+{
+    "name": "My Template",
+    "version": "1.0.0",
+    "description": "A beautiful template for your Laravel application.",
+    "preview_image": "https://example.com/template-preview.jpg",
+    "download_url": "https://example.com/download/my-template.zip",
+    "latest_version": "1.1.0"
+}
