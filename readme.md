@@ -1,10 +1,3 @@
-در اینجا یک فایل `README.md` کامل برای پروژه به همراه دستورالعمل‌های استفاده و یک راه‌حل برای نمایش قالب‌ها و افزونه‌ها در پنل مدیریت آمده است.
-
----
-
-### **`README.md`**
-
-```markdown
 # Template and Plugin Manager for Laravel
 
 A simple and extendable package to manage templates and plugins in Laravel projects. This package allows you to easily install, update, and manage templates and plugins via a dedicated file structure. Templates and plugins can include routes, views, and metadata for easy installation and configuration.
