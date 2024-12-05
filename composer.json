@@ -1,6 +1,14 @@
 {
     "name": "viranet/vira-template-plugin-engine",
     "description": "A package to manage templates and plugins in Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Arvin Loripour",
+        "email": "arvinlp91@gmail.com"
+      }
+    ],
     "autoload": {
         "psr-4": {
             "ViraNet\\TemplatePluginManager\\": "src/"
