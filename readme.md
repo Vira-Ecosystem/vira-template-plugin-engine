@@ -1,239 +1,252 @@
-# Template and Plugin Manager for Laravel
+# Template & Plugin Manager for Laravel
 
-A simple and extendable package to manage templates and plugins in Laravel projects. This package allows you to easily install, update, and manage templates and plugins via a dedicated file structure. Templates and plugins can include routes, views, and metadata for easy installation and configuration.
+This project provides a Template and Plugin Manager for Laravel that allows you to easily manage and integrate templates and plugins. With this system, you can install, activate, deactivate, delete, update, and download templates and plugins. It also supports loading custom routes and views for each plugin and template. Additionally, metadata for each template and plugin can be read and displayed, providing detailed information about each item.
 
 ## Features
-- Install templates and plugins from a specified directory.
-- Load routes dynamically without modifying the main `routes/web.php`.
-- Check for updates for templates and plugins.
-- Preview templates and plugins with images and metadata.
-- Simple and intuitive installation and configuration process.
-  
+
+- Install, activate, deactivate, and delete templates and plugins.
+- Check for updates and download the latest versions of templates and plugins.
+- Metadata support for templates and plugins (preview image, version description, download link).
+- Load routes and custom pages for plugins and templates dynamically.
+- License validation for plugins.
+- Search functionality for templates and plugins via a web service.
+- Admin Panel Integration: View metadata, install, activate, deactivate, and delete templates and plugins directly from the admin interface.
+
+## Requirements
+
+- PHP >= 7.4
+- Laravel >= 8.0
+- Composer
+
 ## Installation
 
-### Step 1: Install via Composer
-In your Laravel project, run the following command to install the package:
+1. **Install via Composer**:
 
-```bash
-composer require viranet/viranet-tp-engine
-```
+   Add the package to your Laravel project using Composer:
+   
+   ```bash
+   composer require viranet/viranet-tp-engine
+   ```
 
-### Step 2: Publish the configuration file (Optional)
-If you want to customize the configuration, publish the config file:
+2. **Publish Configuration**:
 
-```bash
-php artisan vendor:publish --provider="ViraNet\TemplatePluginManager\TemplatePluginManagerServiceProvider" --tag="config"
-```
+   Publish the configuration file to your `config` directory:
+   
+   ```bash
+   php artisan vendor:publish --provider="ViraNet\TemplatePluginManager\ServiceProvider"
+   ```
 
-This will publish a configuration file named `viranet-tp-engine.php` to your `config` directory.
+   This will create the `config/viranet-tp-engine.php` configuration file where you can adjust the paths, license API URL, and search API URL.
 
-### Step 3: Add RouteServiceProvider (Optional)
-If your package needs to manage routes dynamically, make sure to load the package's routes inside `RouteServiceProvider`:
+3. **Set Up Directories**:
+
+   Make sure the `public/vira-tp/templates/` and `public/vira-tp/plugins/` directories exist in your project. If they don't, create them:
+   
+   ```bash
+   mkdir -p public/vira-tp/templates
+   mkdir -p public/vira-tp/plugins
+   ```
+
+## Configuration
+
+The configuration file (`config/viranet-tp-engine.php`) contains the following settings:
 
 ```php
-public function boot()
-{
-    parent::boot();
-
-    // Load routes for templates and plugins
-    \ViraNet\TemplatePluginManager\Services\RouteManager::loadPluginRoutes('your-plugin-name');
-    \ViraNet\TemplatePluginManager\Services\RouteManager::loadTemplateRoutes('your-template-name');
-}
+return [
+    'template_path' => storage_path('public/vira-tp/templates/'),
+    'plugin_path' => storage_path('public/vira-tp/plugins/'),
+    'license_api_url' => env('LICENSE_API_URL', 'https://license-server.com/api/validate'),
+    'search_api_url' => env('SEARCH_API_URL', 'https://search-server.com/api/search'),
+];
 ```
 
-### Step 4: Update your `.env` file (Optional)
-Add the following to your `.env` to define your license and search API URLs:
+### .env
+
+Ensure the following environment variables are set in your `.env` file:
 
 ```env
-LICENSE_API_URL=https://your-license-api-url
-SEARCH_API_URL=https://your-search-api-url
+LICENSE_API_URL=https://license-server.com/api/validate
+SEARCH_API_URL=https://search-server.com/api/search
 ```
-
----
-
-## Usage
-
-### Managing Templates
-
-To install a template, use the following method:
-
-```php
-$templateManager = new \ViraNet\TemplatePluginManager\TemplateManager();
-$templateManager->installTemplate('template-name', '/path/to/template');
-```
-
-This will install the template at `public/packages/templates/template-name`.
-
-To get the metadata of a template:
-
-```php
-$templateMetadata = $templateManager->getTemplateMetadata('template-name');
-```
-
-To check for updates for a template:
-
-```php
-$templateManager->checkForTemplateUpdates('template-name');
-```
-
-To update a template:
-
-```php
-$templateManager->updateTemplate('template-name');
-```
-
-### Managing Plugins
-
-To install a plugin:
-
-```php
-$pluginManager = new \ViraNet\TemplatePluginManager\PluginManager();
-$pluginManager->installPlugin('plugin-name', '/path/to/plugin', 'your-license-key');
-```
-
-To get the metadata of a plugin:
-
-```php
-$pluginMetadata = $pluginManager->getPluginMetadata('plugin-name');
-```
-
-To check for updates for a plugin:
-
-```php
-$pluginManager->checkForPluginUpdates('plugin-name');
-```
-
-To update a plugin:
-
-```php
-$pluginManager->updatePlugin('plugin-name');
-```
-
----
 
 ## Admin Panel Integration
 
-To integrate the templates and plugins in the admin panel, you can create a simple interface to list and manage installed templates and plugins. Here is an example:
+### Displaying Metadata in Admin Panel
 
-### Step 1: Create a Controller
-Create a controller to handle template and plugin management.
+You can integrate the Template & Plugin Manager into your admin panel by fetching and displaying metadata for templates and plugins. The metadata includes details like the name, description, version, preview image, and download link.
+
+#### Example: Fetching and Displaying Metadata
+
+In your admin panel controller, you can fetch and display metadata as follows:
 
 ```php
-php artisan make:controller TemplatePluginController
-```
+use YourNamespace\TemplatePluginManager\TemplateManager;
+use YourNamespace\TemplatePluginManager\PluginManager;
 
-### Step 2: Controller Code
-```php
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use ViraNet\TemplatePluginManager\TemplateManager;
-use ViraNet\TemplatePluginManager\PluginManager;
-
-class TemplatePluginController extends Controller
+class AdminController extends Controller
 {
     protected $templateManager;
     protected $pluginManager;
 
-    public function __construct()
+    public function __construct(TemplateManager $templateManager, PluginManager $pluginManager)
     {
-        $this->templateManager = new TemplateManager();
-        $this->pluginManager = new PluginManager();
+        $this->templateManager = $templateManager;
+        $this->pluginManager = $pluginManager;
     }
 
+    // Show the templates in the admin panel
     public function showTemplates()
     {
-        // Retrieve all installed templates
-        $templates = File::directories(public_path('packages/templates'));
-        
+        $templates = $this->getAllTemplates();
         return view('admin.templates.index', compact('templates'));
     }
 
+    // Show the plugins in the admin panel
     public function showPlugins()
     {
-        // Retrieve all installed plugins
-        $plugins = File::directories(public_path('packages/plugins'));
-        
+        $plugins = $this->getAllPlugins();
         return view('admin.plugins.index', compact('plugins'));
     }
 
-    // Other methods for managing updates and installations
+    private function getAllTemplates()
+    {
+        $templates = [];
+        $templateDirs = glob(storage_path('public/vira-tp/templates/*'), GLOB_ONLYDIR);
+
+        foreach ($templateDirs as $templateDir) {
+            $templateName = basename($templateDir);
+            $metadata = $this->templateManager->getTemplateMetadata($templateName);
+            if ($metadata) {
+                $templates[] = $metadata;
+            }
+        }
+
+        return $templates;
+    }
+
+    private function getAllPlugins()
+    {
+        $plugins = [];
+        $pluginDirs = glob(storage_path('public/vira-tp/plugins/*'), GLOB_ONLYDIR);
+
+        foreach ($pluginDirs as $pluginDir) {
+            $pluginName = basename($pluginDir);
+            $metadata = $this->pluginManager->getPluginMetadata($pluginName);
+            if ($metadata) {
+                $plugins[] = $metadata;
+            }
+        }
+
+        return $plugins;
+    }
 }
 ```
 
-### Step 3: Create Views
-Create views for displaying templates and plugins. For example, `resources/views/admin/templates/index.blade.php`:
+In the above code, the `getAllTemplates()` and `getAllPlugins()` methods fetch all templates and plugins, respectively, and read their metadata. You can then pass this data to your views and display it in your admin panel.
+
+#### Example View for Templates (`resources/views/admin/templates/index.blade.php`)
 
 ```blade
 @extends('layouts.admin')
 
 @section('content')
-    <h1>Installed Templates</h1>
-
-    <ul>
-        @foreach($templates as $template)
-            <li>
-                {{ basename($template) }}
-                <img src="{{ asset('packages/templates/' . basename($template) . '/preview.png') }}" alt="Preview">
-                <!-- Add buttons for actions like update, install, etc. -->
-            </li>
-        @endforeach
-    </ul>
+    <h1>Templates</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Version</th>
+                <th>Preview</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($templates as $template)
+                <tr>
+                    <td>{{ $template['name'] }}</td>
+                    <td>{{ $template['description'] }}</td>
+                    <td>{{ $template['version'] }}</td>
+                    <td><img src="{{ $template['preview_image'] }}" alt="{{ $template['name'] }}" width="50"></td>
+                    <td>
+                        <!-- Add your action buttons here -->
+                        <form action="{{ route('admin.templates.activate', $template['name']) }}" method="POST">
+                            @csrf
+                            <button type="submit">Activate</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endsection
 ```
 
-Create a similar view for plugins: `resources/views/admin/plugins/index.blade.php`:
+This view lists all the templates and their metadata (such as name, description, version, and preview image). You can customize this view to add action buttons like "Activate", "Deactivate", and "Delete" for each template.
 
-```blade
-@extends('layouts.admin')
+### Admin Panel Routes
 
-@section('content')
-    <h1>Installed Plugins</h1>
-
-    <ul>
-        @foreach($plugins as $plugin)
-            <li>
-                {{ basename($plugin) }}
-                <img src="{{ asset('packages/plugins/' . basename($plugin) . '/preview.png') }}" alt="Preview">
-                <!-- Add buttons for actions like update, install, etc. -->
-            </li>
-        @endforeach
-    </ul>
-@endsection
-```
-
-### Step 4: Define Routes
-In `routes/web.php`, define routes to show templates and plugins.
+You can define routes for the admin panel to manage templates and plugins:
 
 ```php
-Route::prefix('admin')->middleware('auth')->group(function() {
-    Route::get('templates', [TemplatePluginController::class, 'showTemplates'])->name('admin.templates.index');
-    Route::get('plugins', [TemplatePluginController::class, 'showPlugins'])->name('admin.plugins.index');
+// routes/web.php
+
+use App\Http\Controllers\AdminController;
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('templates', [AdminController::class, 'showTemplates'])->name('templates.index');
+    Route::get('plugins', [AdminController::class, 'showPlugins'])->name('plugins.index');
+    Route::post('templates/activate/{template}', [AdminController::class, 'activateTemplate'])->name('templates.activate');
+    Route::post('plugins/activate/{plugin}', [AdminController::class, 'activatePlugin'])->name('plugins.activate');
 });
 ```
 
----
+These routes handle the display and management of templates and plugins in your admin panel.
 
-## Additional Features
+## Routes
 
-### Dynamic Routes
-If a template or plugin requires its own routes, they will be loaded automatically via the `RouteManager`. You don’t need to manually add them to the main `routes/web.php`. Simply include routes in the `public/packages/templates/{template-name}/routes/web.php` or `public/packages/plugins/{plugin-name}/routes/web.php` file, and they will be loaded when the template/plugin is installed.
+When you install a template or plugin, if it contains a `routes/web.php` file, the system will automatically load the routes for the template/plugin. This allows templates and plugins to define their custom routes without modifying the main `routes/web.php` file of your Laravel project.
 
-### Template and Plugin Metadata
-Templates and plugins should include a `metadata.json` file that contains relevant information such as version, description, and update URL. Here’s an example `metadata.json` file:
+#### Example of a Plugin Route File (`routes/web.php`)
+
+```php
+// Inside your plugin's routes/web.php
+
+Route::get('/my-plugin', function () {
+    return view('my-plugin::home');
+});
+```
+
+## Metadata Format
+
+Each template and plugin should include a `metadata.json` file in their root directory. This file contains information about the template/plugin such as the name, version, description, preview image, and download URL.
+
+#### Example `metadata.json` for a Plugin
+
+```json
+{
+    "name": "My Plugin",
+    "version": "1.0.0",
+    "description": "This is a powerful plugin for Laravel.",
+    "preview_image": "https://example.com/plugin-preview.jpg",
+    "download_url": "https://example.com/download/my-plugin.zip",
+    "latest_version": "1.1.0"
+}
+```
+
+#### Example `metadata.json` for a Template
 
 ```json
 {
     "name": "My Template",
     "version": "1.0.0",
-    "description": "A beautiful template for your website.",
-    "update_url": "https://your-update-api.com/template/my-template",
-    "preview_image": "preview.png"
+    "description": "A beautiful template for your Laravel application.",
+    "preview_image": "https://example.com/template-preview.jpg",
+    "download_url": "https://example.com/download/my-template.zip",
+    "latest_version": "1.1.0"
 }
 ```
 
----
-
 ## License
 
-This package is licensed under the MIT License.
+This package is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

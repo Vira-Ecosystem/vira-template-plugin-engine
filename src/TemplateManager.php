@@ -5,7 +5,7 @@
  * Copyright by Arvin Loripour 
  * WebSite : http://www.arvinlp.ir 
  * @Last Modified by: Arvin.Loripour
- * @Last Modified time: 2024-12-05 12:03:33
+ * @Last Modified time: 2024-12-05 12:16:25
  */
 namespace ViraNet\TemplatePluginManager;
 
@@ -17,7 +17,7 @@ class TemplateManager
 {
     public function installTemplate($templateName, $path)
     {
-        $templatePath = storage_path('app/templates/'.$templateName);
+        $templatePath = storage_path('public/vira-tp/templates/'.$templateName);
         File::copyDirectory($path, $templatePath);
 
         // بارگذاری صفحات اختصاصی و روت‌ها
@@ -42,7 +42,7 @@ class TemplateManager
 
     public function deleteTemplate($templateName)
     {
-        $templatePath = storage_path('app/templates/'.$templateName);
+        $templatePath = storage_path('public/vira-tp/templates/'.$templateName);
 
         if (File::exists($templatePath)) {
             File::deleteDirectory($templatePath);
@@ -55,7 +55,7 @@ class TemplateManager
     // متد جدید برای دریافت اطلاعات قالب
     public function getTemplateMetadata($templateName)
     {
-        $metadataPath = storage_path('app/templates/'.$templateName.'/metadata.json');
+        $metadataPath = storage_path('public/vira-tp/templates/'.$templateName.'/metadata.json');
 
         if (File::exists($metadataPath)) {
             return json_decode(File::get($metadataPath), true);
@@ -96,7 +96,7 @@ class TemplateManager
             $downloadUrl = $metadata['download_url'];
 
             // دانلود از URL
-            $filePath = storage_path('app/templates/'.$templateName.'.zip');
+            $filePath = storage_path('public/vira-tp/templates/'.$templateName.'.zip');
             file_put_contents($filePath, file_get_contents($downloadUrl));
 
             return "Template downloaded successfully!";
@@ -107,7 +107,7 @@ class TemplateManager
 
     public function loadTemplatePages($templateName)
     {
-        $templatePath = storage_path('app/templates/'.$templateName.'/views');
+        $templatePath = storage_path('public/vira-tp/templates/'.$templateName.'/views');
 
         if (File::exists($templatePath)) {
             View::addNamespace('template', $templatePath);

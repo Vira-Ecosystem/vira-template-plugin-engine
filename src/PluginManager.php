@@ -5,7 +5,7 @@
  * Copyright by Arvin Loripour 
  * WebSite : http://www.arvinlp.ir 
  * @Last Modified by: Arvin.Loripour
- * @Last Modified time: 2024-12-05 11:46:05
+ * @Last Modified time: 2024-12-05 12:16:44
  */
 namespace ViraNet\TemplatePluginManager;
 
@@ -18,7 +18,7 @@ class PluginManager
 {
     public function installPlugin($pluginName, $path, $licenseKey)
     {
-        $pluginPath = storage_path('app/plugins/'.$pluginName);
+        $pluginPath = storage_path('public/vira-tp/plugins/'.$pluginName);
         File::copyDirectory($path, $pluginPath);
 
         // تأیید لایسنس
@@ -45,7 +45,7 @@ class PluginManager
 
     public function deletePlugin($pluginName)
     {
-        $pluginPath = storage_path('app/plugins/'.$pluginName);
+        $pluginPath = storage_path('public/vira-tp/plugins/'.$pluginName);
 
         if (File::exists($pluginPath)) {
             File::deleteDirectory($pluginPath);
@@ -58,7 +58,7 @@ class PluginManager
     // متد جدید برای دریافت اطلاعات افزونه
     public function getPluginMetadata($pluginName)
     {
-        $metadataPath = storage_path('app/plugins/'.$pluginName.'/metadata.json');
+        $metadataPath = storage_path('public/vira-tp/plugins/'.$pluginName.'/metadata.json');
 
         if (File::exists($metadataPath)) {
             return json_decode(File::get($metadataPath), true);
@@ -99,7 +99,7 @@ class PluginManager
             $downloadUrl = $metadata['download_url'];
 
             // دانلود از URL
-            $filePath = storage_path('app/plugins/'.$pluginName.'.zip');
+            $filePath = storage_path('public/vira-tp/plugins/'.$pluginName.'.zip');
             file_put_contents($filePath, file_get_contents($downloadUrl));
 
             return "Plugin downloaded successfully!";
