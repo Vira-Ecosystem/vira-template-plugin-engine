@@ -22,7 +22,7 @@ class RouteManager
      */
     public static function loadTemplateRoutes($template)
     {
-        $routeFile = base_path("packages/templates/{$template}/routes/web.php");
+        $routeFile = base_path("vira-tp/templates/{$template}/routes/web.php");
 
         if (file_exists($routeFile)) {
             Route::prefix("template/{$template}")->group(function() use ($routeFile) {
@@ -39,7 +39,7 @@ class RouteManager
      */
     public static function loadPluginRoutes($plugin)
     {
-        $routeFile = base_path("packages/plugins/{$plugin}/routes/web.php");
+        $routeFile = base_path("vira-tp/plugins/{$plugin}/routes/web.php");
 
         if (file_exists($routeFile)) {
             Route::prefix("plugin/{$plugin}")->group(function() use ($routeFile) {
@@ -55,13 +55,13 @@ class RouteManager
      */
     public static function loadAllRoutes()
     {
-        $templates = File::directories(public_path('packages/templates'));
+        $templates = File::directories(public_path('vira-tp/templates'));
         foreach ($templates as $template) {
             $templateName = basename($template);
             self::loadTemplateRoutes($templateName);
         }
 
-        $plugins = File::directories(public_path('packages/plugins'));
+        $plugins = File::directories(public_path('vira-tp/plugins'));
         foreach ($plugins as $plugin) {
             $pluginName = basename($plugin);
             self::loadPluginRoutes($pluginName);

@@ -34,13 +34,13 @@ class UpdateService
         $response = Http::get($updateUrl);
 
         if ($response->successful()) {
-            $storagePath = public_path("packages/{$type}/{$name}");
+            $storagePath = public_path("vira-tp/{$type}/{$name}");
             File::put($storagePath.'.zip', $response->body());
 
             // استخراج فایل‌ها
             $zip = new \ZipArchive;
             if ($zip->open($storagePath.'.zip') === true) {
-                $zip->extractTo(public_path("packages/{$type}/{$name}"));
+                $zip->extractTo(public_path("vira-tp/{$type}/{$name}"));
                 $zip->close();
                 File::delete($storagePath.'.zip');
                 return "Update for {$name} installed successfully.";

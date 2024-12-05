@@ -250,3 +250,6 @@ Each template and plugin should include a `metadata.json` file in their root dir
 ## License
 
 This package is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## 
+Help to improve the package :D
