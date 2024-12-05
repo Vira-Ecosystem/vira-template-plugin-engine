@@ -1,4 +1,4 @@
-# Template & Plugin Manager for Laravel
+# Vira Template & Plugin Manager for Laravel
 
 This project provides a Template and Plugin Manager for Laravel that allows you to easily manage and integrate templates and plugins. With this system, you can install, activate, deactivate, delete, update, and download templates and plugins. It also supports loading custom routes and views for each plugin and template. Additionally, metadata for each template and plugin can be read and displayed, providing detailed information about each item.
 
@@ -25,7 +25,7 @@ This project provides a Template and Plugin Manager for Laravel that allows you 
    Add the package to your Laravel project using Composer:
    
    ```bash
-   composer require viranet/viranet-tp-engine
+   composer require composer require viranet/vira-template-plugin-engine
    ```
 
 2. **Publish Configuration**:
