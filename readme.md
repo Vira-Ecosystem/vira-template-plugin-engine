@@ -237,4 +237,3 @@ Templates and plugins should include a `metadata.json` file that contains releva
 ## License
 
 This package is licensed under the MIT License.
-```
